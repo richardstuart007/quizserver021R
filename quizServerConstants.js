@@ -1,12 +1,12 @@
 //
 //  Database (Railway 20)
 //
-exports.R20R_KNEX_CLIENT = 'pg'
-exports.R20R_KNEX_PORT = 7306
-exports.R20R_KNEX_HOST = 'containers-us-west-117.railway.app'
-exports.R20R_KNEX_USER = 'postgres'
-exports.R20R_KNEX_PWD = 'xw85A7Dol3dpWGDOYdC1'
-exports.R20R_KNEX_DATABASE = 'railway'
+exports.REMOTE_KNEX_CLIENT = 'pg'
+exports.REMOTE_KNEX_PORT = 7306
+exports.REMOTE_KNEX_HOST = 'containers-us-west-117.railway.app'
+exports.REMOTE_KNEX_USER = 'postgres'
+exports.REMOTE_KNEX_PWD = 'xw85A7Dol3dpWGDOYdC1'
+exports.REMOTE_KNEX_DATABASE = 'railway'
 exports.REMOTE_URL_PORT = 9001
 //
 //  Database (Local 20)
