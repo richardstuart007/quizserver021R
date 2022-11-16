@@ -15,7 +15,7 @@ exports.LOCAL_KNEX_CLIENT = 'pg'
 exports.LOCAL_KNEX_HOST = '127.0.0.1'
 exports.LOCAL_KNEX_USER = 'richa'
 exports.LOCAL_KNEX_PWD = 'london'
-exports.LOCAL_KNEX_DATABASE = 'Quiz020'
+exports.LOCAL_KNEX_DATABASE = 'Quiz021'
 exports.LOCAL_URL_PORT = 8001
 //
 //  URL
