@@ -1,6 +1,6 @@
 {
-  "name": "quizserver",
-  "homepage": "https://richardstuart007.github.io/quizserver021R",
+  "name": "quizserver21r",
+  "homepage": ".",
   "version": "1.21.0",
   "description": "Quiz Server",
   "main": "script.js",
@@ -28,12 +28,5 @@
   },
   "engines": {
     "node": "16.x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/richardstuart007/quizserver021R.git"
-  },
-  "bugs": {
-    "url": "https://github.com/richardstuart007/quizserver021R/issues"
   }
 }
