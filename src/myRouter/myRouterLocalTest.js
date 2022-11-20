@@ -2,15 +2,15 @@
 //  Libraries
 //
 const express = require('express')
-const cors = require('cors')
+const myRouterLocalTest = express.Router()
 const knex = require('knex')
 const { format } = require('date-fns')
 //
 //  Sub components
 //
-const serverRaw = require('./controllers/serverRaw')
-const serverRegister = require('./controllers/serverRegister')
-const serverSignin = require('./controllers/serverSignin')
+const serverRaw = require('../controllers/serverRaw')
+const serverRegister = require('../controllers/serverRegister')
+const serverSignin = require('../controllers/serverSignin')
 //..............................................................................
 //.  Initialisation
 //.............................................................................
@@ -18,7 +18,7 @@ const serverSignin = require('./controllers/serverSignin')
 //  Counter
 //
 let logCounter = 0
-const quizserver = 'quizServerLocal'
+const moduleName = 'myRouterLocalTest'
 //
 // Constants
 //
@@ -28,11 +28,10 @@ const {
   LOCAL_KNEX_USER,
   LOCAL_KNEX_PWD,
   LOCAL_KNEX_DATABASE,
-  LOCAL_URL_PORT,
   URL_SIGNIN,
   URL_TABLES,
   URL_REGISTER
-} = require('./quizServerConstants.js')
+} = require('./../server/serverConstants.js')
 //
 // Knex (LOCAL)
 //
@@ -46,49 +45,34 @@ const db = knex({
   }
 })
 //
-//
+//  Log setup
 //
 console.log(
-  `Database Connection==> Client(${LOCAL_KNEX_CLIENT}) host(${LOCAL_KNEX_HOST}) user(${LOCAL_KNEX_USER}) database(${LOCAL_KNEX_DATABASE})`
+  `${moduleName} Database Connection==> Client(${LOCAL_KNEX_CLIENT}) host(${LOCAL_KNEX_HOST}) user(${LOCAL_KNEX_USER}) database(${LOCAL_KNEX_DATABASE})`
 )
-//
-// Express & Cors
-//
-const app = express()
-app.use(express.json())
-app.use(cors())
 //.............................................................................
 //.  Routes - Tables
 //.............................................................................
-app.post(URL_TABLES, (req, res) => {
+myRouterLocalTest.post(URL_TABLES, (req, res) => {
   logRawTables(req, 'POST', 'RAW', 'serverRaw')
   serverRaw.serverRaw(req, res, db, logCounter)
 })
 
-app.delete(URL_TABLES, (req, res) => {
+myRouterLocalTest.delete(URL_TABLES, (req, res) => {
   logRawTables(req, 'DELETE', 'RAW', 'serverRaw')
   serverRaw.serverRaw(req, res, db, logCounter)
 })
 //.............................................................................
 //.  Routes - Register/SignIn
 //.............................................................................
-
-app.post(URL_SIGNIN, (req, res) => {
+myRouterLocalTest.post(URL_SIGNIN, (req, res) => {
   logRawSignIn(req, 'POST Signin')
   serverSignin.serverSignin(req, res, db, logCounter)
 })
 
-app.post(URL_REGISTER, (req, res) => {
+myRouterLocalTest.post(URL_REGISTER, (req, res) => {
   logRawSignIn(req, 'POST Register')
   serverRegister.serverRegister(req, res, db, logCounter)
-})
-//..............................................................................
-//.  Start Server
-//.............................................................................
-const TimeStamp = format(new Date(), 'yyLLddHHmmss')
-let logMessage = `SERVER.. ${logCounter} Time:${TimeStamp} QuizServer(${quizserver}) running on PORT(${LOCAL_URL_PORT})`
-app.listen(LOCAL_URL_PORT, () => {
-  console.log(logMessage)
 })
 //.............................................................................
 //.  Log the Body to the console
@@ -143,3 +127,5 @@ function logRawSignIn(req, fetchAction) {
   if (id) logMessage.concat(` ID(${id})`)
   console.log(logMessage)
 }
+//.............................................................................
+module.exports = myRouterLocalTest

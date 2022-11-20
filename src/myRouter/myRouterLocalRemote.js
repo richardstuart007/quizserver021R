@@ -2,15 +2,15 @@
 //  Libraries
 //
 const express = require('express')
-const cors = require('cors')
+const myRouterLocalRemote = express.Router()
 const knex = require('knex')
 const { format } = require('date-fns')
 //
 //  Sub components
 //
-const serverRaw = require('./controllers/serverRaw')
-const serverRegister = require('./controllers/serverRegister')
-const serverSignin = require('./controllers/serverSignin')
+const serverRaw = require('../controllers/serverRaw')
+const serverRegister = require('../controllers/serverRegister')
+const serverSignin = require('../controllers/serverSignin')
 //..............................................................................
 //.  Initialisation
 //.............................................................................
@@ -18,7 +18,7 @@ const serverSignin = require('./controllers/serverSignin')
 //  Counter
 //
 let logCounter = 0
-const quizserver = 'quizServerLocalRemote'
+const moduleName = 'myRouterLocalRemote'
 //
 // Constants
 //
@@ -29,67 +29,52 @@ const {
   REMOTE_KNEX_USER,
   REMOTE_KNEX_PWD,
   REMOTE_KNEX_DATABASE,
-  REMOTE_URL_PORT,
   URL_SIGNIN,
   URL_TABLES,
   URL_REGISTER
-} = require('./quizServerConstants.js')
+} = require('./../server/serverConstants.js')
 //
-// Knex
+// Knex (LOCAL)
 //
 const db = knex({
   client: REMOTE_KNEX_CLIENT,
   connection: {
     host: REMOTE_KNEX_HOST,
-    port: REMOTE_KNEX_PORT,
     user: REMOTE_KNEX_USER,
     password: REMOTE_KNEX_PWD,
-    database: REMOTE_KNEX_DATABASE
+    database: REMOTE_KNEX_DATABASE,
+    port: REMOTE_KNEX_PORT
   }
 })
 //
+//  Log setup
 //
-
 console.log(
-  `Database Connection==> Client(${REMOTE_KNEX_CLIENT}) host(${REMOTE_KNEX_HOST}) port(${REMOTE_KNEX_PORT}) user(${REMOTE_KNEX_USER}) database(${REMOTE_KNEX_DATABASE})`
+  `${moduleName} Database Connection==> Client(${REMOTE_KNEX_CLIENT}) host(${REMOTE_KNEX_HOST}) user(${REMOTE_KNEX_USER}) database(${REMOTE_KNEX_DATABASE})`
 )
-//
-// Express & Cors
-//
-const app = express()
-app.use(express.json())
-app.use(cors())
 //.............................................................................
 //.  Routes - Tables
 //.............................................................................
-app.post(URL_TABLES, (req, res) => {
+myRouterLocalRemote.post(URL_TABLES, (req, res) => {
   logRawTables(req, 'POST', 'RAW', 'serverRaw')
   serverRaw.serverRaw(req, res, db, logCounter)
 })
 
-app.delete(URL_TABLES, (req, res) => {
+myRouterLocalRemote.delete(URL_TABLES, (req, res) => {
   logRawTables(req, 'DELETE', 'RAW', 'serverRaw')
   serverRaw.serverRaw(req, res, db, logCounter)
 })
 //.............................................................................
 //.  Routes - Register/SignIn
 //.............................................................................
-app.post(URL_SIGNIN, (req, res) => {
+myRouterLocalRemote.post(URL_SIGNIN, (req, res) => {
   logRawSignIn(req, 'POST Signin')
   serverSignin.serverSignin(req, res, db, logCounter)
 })
 
-app.post(URL_REGISTER, (req, res) => {
+myRouterLocalRemote.post(URL_REGISTER, (req, res) => {
   logRawSignIn(req, 'POST Register')
   serverRegister.serverRegister(req, res, db, logCounter)
-})
-//..............................................................................
-//.  Start Server
-//.............................................................................
-const TimeStamp = format(new Date(), 'yyLLddHHmmss')
-let logMessage = `SERVER.. ${logCounter} Time:${TimeStamp} QuizServer(${quizserver}) running on PORT(${REMOTE_URL_PORT})`
-app.listen(REMOTE_URL_PORT, () => {
-  console.log(logMessage)
 })
 //.............................................................................
 //.  Log the Body to the console
@@ -134,7 +119,7 @@ function logRawSignIn(req, fetchAction) {
   //
   //  Counter
   //
-  const TimeStamp = format(new Date(), 'yyLLddHHmmss')
+  const TimeStamp = format(new Date(), 'HHmmss')
   logCounter = logCounter + 1
   //
   // Format message & Log
@@ -144,3 +129,5 @@ function logRawSignIn(req, fetchAction) {
   if (id) logMessage.concat(` ID(${id})`)
   console.log(logMessage)
 }
+//.............................................................................
+module.exports = myRouterLocalRemote

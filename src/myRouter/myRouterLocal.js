@@ -2,15 +2,15 @@
 //  Libraries
 //
 const express = require('express')
-const cors = require('cors')
+const myRouterLocal = express.Router()
 const knex = require('knex')
 const { format } = require('date-fns')
 //
 //  Sub components
 //
-const serverRaw = require('./controllers/serverRaw')
-const serverRegister = require('./controllers/serverRegister')
-const serverSignin = require('./controllers/serverSignin')
+const serverRaw = require('../controllers/serverRaw')
+const serverRegister = require('../controllers/serverRegister')
+const serverSignin = require('../controllers/serverSignin')
 //..............................................................................
 //.  Initialisation
 //.............................................................................
@@ -18,78 +18,61 @@ const serverSignin = require('./controllers/serverSignin')
 //  Counter
 //
 let logCounter = 0
-const quizserver = 'quizServerRemote'
+const moduleName = 'myRouterLocal'
 //
 // Constants
 //
 const {
-  REMOTE_KNEX_PORT,
-  REMOTE_KNEX_CLIENT,
-  REMOTE_KNEX_HOST,
-  REMOTE_KNEX_USER,
-  REMOTE_KNEX_PWD,
-  REMOTE_KNEX_DATABASE,
-  REMOTE_URL_PORT,
+  LOCAL_KNEX_CLIENT,
+  LOCAL_KNEX_HOST,
+  LOCAL_KNEX_USER,
+  LOCAL_KNEX_PWD,
+  LOCAL_KNEX_DATABASE,
   URL_SIGNIN,
   URL_TABLES,
   URL_REGISTER
-} = require('./quizServerConstants.js')
+} = require('./../server/serverConstants.js')
 //
-// Knex
+// Knex (LOCAL)
 //
 const db = knex({
-  client: REMOTE_KNEX_CLIENT,
+  client: LOCAL_KNEX_CLIENT,
   connection: {
-    host: REMOTE_KNEX_HOST,
-    port: REMOTE_KNEX_PORT,
-    user: REMOTE_KNEX_USER,
-    password: REMOTE_KNEX_PWD,
-    database: REMOTE_KNEX_DATABASE
+    host: LOCAL_KNEX_HOST,
+    user: LOCAL_KNEX_USER,
+    password: LOCAL_KNEX_PWD,
+    database: LOCAL_KNEX_DATABASE
   }
 })
 //
+//  Log setup
 //
-
 console.log(
-  `Database Connection==> Client(${REMOTE_KNEX_CLIENT}) host(${REMOTE_KNEX_HOST}) port(${REMOTE_KNEX_PORT}) user(${REMOTE_KNEX_USER}) database(${REMOTE_KNEX_DATABASE})`
+  `${moduleName} Database Connection==> Client(${LOCAL_KNEX_CLIENT}) host(${LOCAL_KNEX_HOST}) user(${LOCAL_KNEX_USER}) database(${LOCAL_KNEX_DATABASE})`
 )
-//
-// Express & Cors
-//
-const app = express()
-app.use(express.json())
-app.use(cors())
 //.............................................................................
 //.  Routes - Tables
 //.............................................................................
-app.post(URL_TABLES, (req, res) => {
+myRouterLocal.post(URL_TABLES, (req, res) => {
   logRawTables(req, 'POST', 'RAW', 'serverRaw')
   serverRaw.serverRaw(req, res, db, logCounter)
 })
 
-app.delete(URL_TABLES, (req, res) => {
+myRouterLocal.delete(URL_TABLES, (req, res) => {
   logRawTables(req, 'DELETE', 'RAW', 'serverRaw')
   serverRaw.serverRaw(req, res, db, logCounter)
 })
 //.............................................................................
 //.  Routes - Register/SignIn
 //.............................................................................
-app.post(URL_SIGNIN, (req, res) => {
+myRouterLocal.post(URL_SIGNIN, (req, res) => {
   logRawSignIn(req, 'POST Signin')
   serverSignin.serverSignin(req, res, db, logCounter)
 })
 
-app.post(URL_REGISTER, (req, res) => {
+myRouterLocal.post(URL_REGISTER, (req, res) => {
   logRawSignIn(req, 'POST Register')
   serverRegister.serverRegister(req, res, db, logCounter)
-})
-//..............................................................................
-//.  Start Server
-//.............................................................................
-const TimeStamp = format(new Date(), 'yyLLddHHmmss')
-let logMessage = `SERVER.. ${logCounter} Time:${TimeStamp} QuizServer(${quizserver}) running on PORT(${REMOTE_URL_PORT})`
-app.listen(REMOTE_URL_PORT, () => {
-  console.log(logMessage)
 })
 //.............................................................................
 //.  Log the Body to the console
@@ -134,7 +117,7 @@ function logRawSignIn(req, fetchAction) {
   //
   //  Counter
   //
-  const TimeStamp = format(new Date(), 'yyLLddHHmmss')
+  const TimeStamp = format(new Date(), 'HHmmss')
   logCounter = logCounter + 1
   //
   // Format message & Log
@@ -144,3 +127,5 @@ function logRawSignIn(req, fetchAction) {
   if (id) logMessage.concat(` ID(${id})`)
   console.log(logMessage)
 }
+//.............................................................................
+module.exports = myRouterLocal
